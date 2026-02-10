@@ -260,9 +260,9 @@ with st.container():
         
         # Carteira
         with st.container():
-            st.markdown('<div style="background: rgba(255, 107, 107, 0.15); border: 2px solid #ff6b6b; border-radius: 12px; padding: 18px; margin: 15px 0; text-align: center;"><p style="color: #999; font-size: 10px; text-transform: uppercase; margin: 0 0 10px 0;">Carteira Digital - Ethereum/Polygon</p><p style="color: #00dd88; font-size: 13px; font-weight: 900; margin: 0; word-break: break-all; font-family: monospace;">0xec93c5ba7015f3c2720da1437f03cb7be4e5942a</p></div>', unsafe_allow_html=True)
+            st.markdown('<div style="background: rgba(255, 107, 107, 0.15); border: 2px solid #ff6b6b; border-radius: 12px; padding: 18px; margin: 15px 0; text-align: center;"><p style="color: #999; font-size: 14px; text-transform: none; margin: 0 0 10px 0;">Qualquer WEMIX será bem vinda Obrigado.</p><p style="color: #00dd88; font-size: 13px; font-weight: 900; margin: 0; word-break: break-all; font-family: monospace;">0xec93c5ba7015f3c2720da1437f03cb7be4e5942a</p></div>', unsafe_allow_html=True)
         
-        st.markdown('<p style="text-align: center; color: #ccc; font-size: 11px;">✨ Obrigado! ✨</p>', unsafe_allow_html=True)
+        st.markdown('<p style="text-align: center; color: #ccc; font-size: 22px;">✨ Obrigado! ✨</p>', unsafe_allow_html=True)
 
 # ---------------- Sidebar Configurações ----------------
 with st.sidebar:
