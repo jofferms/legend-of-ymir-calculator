@@ -56,18 +56,46 @@ h1 {
     margin: 0 15px;
 }
 
-.medieval-arc {
-    font-size: 48px;
-    color: #f0c75e;
-    font-weight: 900;
-    text-shadow: 2px 2px 4px #000;
+/* ===== RESULTADO ===== */
+[data-testid="column"] {
+    display: flex;
+    justify-content: center;
 }
 
-.result-values {
-    font-size: 28px;
-    line-height: 1.8;
-    margin-top: 10px;
+.result-card {
+    width: 100%;
+    max-width: 420px;
+    background: linear-gradient(145deg, #1a1c23, #101116);
+    border-radius: 18px;
+    padding: 20px;
     text-align: center;
+    transition: all 0.25s ease-in-out;
+}
+
+.result-card:hover {
+    transform: scale(1.02);
+}
+
+.result-venda {
+    border: 2px solid #00cc88;
+    box-shadow: 0 0 18px #00cc8840;
+}
+
+.result-compra {
+    border: 2px solid #ffaa00;
+    box-shadow: 0 0 18px #ffaa0040;
+}
+
+.result-card h3 {
+    margin-bottom: 12px;
+    font-size: 1.6rem;
+    font-weight: 800;
+}
+
+.result-liq {
+    font-size: 0.9rem;
+    color: #aaa;
+    margin-top: 6px;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -91,27 +119,23 @@ st.markdown('<div class="card"><h2 class="section-title">💰 VALOR DO ITEM</h2>
 
 col1, col2 = st.columns([1, 1])
 with col1:
-    qty_wemix = st.number_input("WEMIX", min_value=0.0, step=0.1, key="wemix_qty")
+    qty_wemix = st.number_input("WEMIX", min_value=0.0, step=0.1)
 with col2:
-    qty_diamante = st.number_input("DIAMANTES", min_value=0.0, step=10.0, key="diamante_qty")
+    qty_diamante = st.number_input("DIAMANTES", min_value=0.0, step=10.0)
 
 # ---------------- CÁLCULOS ----------------
 fator_liquido = 1 - (taxa_mercado / 100)
 
-# === VENDA ===
-# WEMIX
 wemix_venda_liq = qty_wemix * fator_liquido
 wemix_venda_usd = wemix_venda_liq * valor_wemix_usd
 wemix_venda_brl = wemix_venda_usd * usd_to_brl
 wemix_venda_eur = wemix_venda_usd * usd_to_eur
 
-# DIAMANTES
 diamante_venda_liq = qty_diamante * fator_liquido
 diamante_venda_brl = (diamante_venda_liq / 1000) * valor_1000_diamantes_brl
 diamante_venda_usd = diamante_venda_brl / usd_to_brl
 diamante_venda_eur = diamante_venda_usd * usd_to_eur
 
-# Melhor venda
 if wemix_venda_usd >= diamante_venda_usd:
     melhor_venda_nome = "WEMIX"
     melhor_venda_usd = wemix_venda_usd
@@ -125,18 +149,14 @@ else:
     melhor_venda_eur = diamante_venda_eur
     melhor_venda_liq = diamante_venda_liq
 
-# === COMPRA ===
-# WEMIX
 wemix_compra_usd = qty_wemix * valor_wemix_usd
 wemix_compra_brl = wemix_compra_usd * usd_to_brl
 wemix_compra_eur = wemix_compra_usd * usd_to_eur
 
-# DIAMANTES
 diamante_compra_usd = (qty_diamante / 1000) * valor_1000_diamantes_brl / usd_to_brl
 diamante_compra_brl = diamante_compra_usd * usd_to_brl
 diamante_compra_eur = diamante_compra_usd * usd_to_eur
 
-# Melhor compra (menor custo = melhor)
 if wemix_compra_usd <= diamante_compra_usd:
     melhor_compra_nome = "WEMIX"
     melhor_compra_usd = wemix_compra_usd
@@ -151,65 +171,33 @@ else:
     melhor_compra_liq = diamante_compra_usd * fator_liquido
 
 # ---------------- 📊 RESULTADO ----------------
-st.markdown(
-    '''
-    <div class="card" style="max-width: 900px; margin: 25px auto; padding: 20px 30px;">
-        <h2 class="section-title" style="font-size: 32px; margin-bottom: 20px;">📊 RESULTADO</h2>
-    </div>
-    ''',
-    unsafe_allow_html=True
-)
-
 if qty_wemix == 0 and qty_diamante == 0:
     st.info("Preencha a quantidade de WEMIX ou DIAMANTES para ver o resultado.")
 else:
-    col_esq, col_dir = st.columns([1, 1], gap="medium")
+    col_esq, col_dir = st.columns(2)
 
     with col_esq:
-        st.markdown(
-            f"""
-            <div style="text-align: center; background: linear-gradient(145deg, #1a1c23, #101116); 
-                        border: 2px solid #00cc88; border-radius: 14px; padding: 18px 16px; 
-                        box-shadow: 0 0 15px #00cc8830;">
-                <h3 style="color: #00cc88; margin: 0 0 12px 0; font-size: 1.45rem;">
-                    💵 Melhor Venda<br>
-                    <span style="font-size: 1.1rem;">{melhor_venda_nome}</span>
-                </h3>
-                <div style="font-size: 1.1rem; line-height: 1.7; color: #e6e6e6;">
-                    USD <b>${melhor_venda_usd:,.2f}</b><br>
-                    BRL <b>R$ {melhor_venda_brl:,.2f}</b><br>
-                    EUR <b>€ {melhor_venda_eur:,.2f}</b><br>
-                    <span style="color: #aaa; font-size: 0.9rem;">
-                        Líquido ({taxa_mercado:.0f}%): {melhor_venda_liq:,.2f}
-                    </span>
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+        st.markdown(f"""
+        <div class="result-card result-venda">
+            <h3 style="color:#00cc88;">💵 Melhor Venda<br>{melhor_venda_nome}</h3>
+            USD <b>${melhor_venda_usd:,.2f}</b><br>
+            BRL <b>R$ {melhor_venda_brl:,.2f}</b><br>
+            EUR <b>€ {melhor_venda_eur:,.2f}</b><br>
+            <div class="result-liq">Líquido ({taxa_mercado:.0f}%): {melhor_venda_liq:,.2f}</div>
+        </div>
+        """, unsafe_allow_html=True)
 
     with col_dir:
-        st.markdown(
-            f"""
-            <div style="text-align: center; background: linear-gradient(145deg, #1a1c23, #101116); 
-                        border: 2px solid #ffaa00; border-radius: 14px; padding: 18px 16px; 
-                        box-shadow: 0 0 15px #ffaa0030;">
-                <h3 style="color: #ffaa00; margin: 0 0 12px 0; font-size: 1.45rem;">
-                    🛒 Melhor Compra<br>
-                    <span style="font-size: 1.1rem;">{melhor_compra_nome}</span>
-                </h3>
-                <div style="font-size: 1.1rem; line-height: 1.7; color: #e6e6e6;">
-                    USD <b>${melhor_compra_usd:,.2f}</b><br>
-                    BRL <b>R$ {melhor_compra_brl:,.2f}</b><br>
-                    EUR <b>€ {melhor_compra_eur:,.2f}</b><br>
-                    <span style="color: #aaa; font-size: 0.9rem;">
-                        Líquido ({taxa_mercado:.0f}%): {melhor_compra_liq:,.2f}
-                    </span>
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+        st.markdown(f"""
+        <div class="result-card result-compra">
+            <h3 style="color:#ffaa00;">🛒 Melhor Compra<br>{melhor_compra_nome}</h3>
+            USD <b>${melhor_compra_usd:,.2f}</b><br>
+            BRL <b>R$ {melhor_compra_brl:,.2f}</b><br>
+            EUR <b>€ {melhor_compra_eur:,.2f}</b><br>
+            <div class="result-liq">Líquido ({taxa_mercado:.0f}%): {melhor_compra_liq:,.2f}</div>
+        </div>
+        """, unsafe_allow_html=True)
 
 st.divider()
 st.caption("Calculadora Legend of Ymir – Premium • 2026")
+
